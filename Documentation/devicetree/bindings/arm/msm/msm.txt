@@ -73,6 +73,12 @@ SoCs:
 - SDXPRAIRIE
   compatible = "qcom,sdxprairie"
 
+- SDM636
+  compatible = "qcom,sdm636"
+
+- SDA636
+  compatible = "qcom,sda636"
+
 - SDMMAGPIE
   compatible = "qcom,sdmmagpie"
 
@@ -278,6 +284,12 @@ compatible = "qcom,sdm660-sim"
 compatible = "qcom,sda660-mtp"
 compatible = "qcom,sda660-cdp"
 compatible = "qcom,sda660-qrd"
+compatible = "qcom,sdm636-cdp"
+compatible = "qcom,sdm636-mtp"
+compatible = "qcom,sdm636-qrd"
+compatible = "qcom,sda636-qrd"
+compatible = "qcom,sda636-mtp"
+compatible = "qcom,sda636-cdp"
 compatible = "qcom,mdm9607-cdp"
 compatible = "qcom,sdm429-cdp"
 compatible = "qcom,sdm429w-cdp"
