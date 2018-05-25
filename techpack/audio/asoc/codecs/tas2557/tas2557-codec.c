@@ -494,12 +494,14 @@ static struct snd_soc_codec_driver soc_codec_driver_tas2557 = {
 	.resume = tas2557_codec_resume,
 	.set_bias_level = tas2557_set_bias_level,
 	.idle_bias_off = true,
-	.controls = tas2557_snd_controls,
-	.num_controls = ARRAY_SIZE(tas2557_snd_controls),
-	.dapm_widgets = tas2557_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(tas2557_dapm_widgets),
-	.dapm_routes = tas2557_audio_map,
-	.num_dapm_routes = ARRAY_SIZE(tas2557_audio_map),
+	.component_driver = {
+		.controls = tas2557_snd_controls,
+		.num_controls = ARRAY_SIZE(tas2557_snd_controls),
+		.dapm_widgets = tas2557_dapm_widgets,
+		.num_dapm_widgets = ARRAY_SIZE(tas2557_dapm_widgets),
+		.dapm_routes = tas2557_audio_map,
+		.num_dapm_routes = ARRAY_SIZE(tas2557_audio_map),
+	},
 };
 
 static struct snd_soc_dai_ops tas2557_dai_ops = {
