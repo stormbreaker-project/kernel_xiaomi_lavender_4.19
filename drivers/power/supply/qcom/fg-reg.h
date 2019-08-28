@@ -296,6 +296,11 @@
 #define MEM_IF_MEM_ARB_CFG(chip)		((chip->mem_if_base) + 0x40)
 #define MEM_GNT_BIT				BIT(2)
 
+#ifdef CONFIG_MACH_LONGCHEER
+#define BATT_INFO_PEEK_MUX1(chip)		(chip->batt_info_base + 0xEB)
+#define PEEK_MUX1_BIT				BIT(0)
+#endif
+
 #define BATT_INFO_PEEK_MUX4(chip)		(chip->batt_info_base + 0xEE)
 #define ALG_ACTIVE_PEEK_CFG			0xAC
 
