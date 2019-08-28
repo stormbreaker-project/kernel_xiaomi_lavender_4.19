@@ -32,3 +32,4 @@ obj-$(CONFIG_INPUT_KEYCOMBO)	+= keycombo.o
 
 obj-$(CONFIG_RMI4_CORE)		+= rmi4/
 obj-$(CONFIG_SMI130)   += sensors/smi130/
+obj-$(CONFIG_INPUT_HALL_SENSOR_E7S)	+= hall_e7s.o
