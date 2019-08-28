@@ -163,6 +163,10 @@ ifdef CONFIG_SND_SOC_WCD_IRQ
 	CORE_OBJS += wcd-irq.o
 endif
 
+ifdef CONFIG_SND_SOC_MAX98937
+    MAX98937_OBJS += max98937.o
+endif
+
 LINUX_INC +=	-Iinclude/linux
 
 INCS +=		$(COMMON_INC) \
@@ -209,6 +213,7 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= msm_sdw/
 	obj-y	+= wcd9360/
 	obj-y	+= wcd937x/
+	obj-y	+= tas2557/
 endif
 
 ifeq ($(CONFIG_SND_SOC_GCOV), y)
@@ -245,3 +250,6 @@ mbhc_dlkm-y := $(MBHC_OBJS)
 
 obj-$(CONFIG_SND_SOC_MSM_HDMI_CODEC_RX) += hdmi_dlkm.o
 hdmi_dlkm-y := $(HDMICODEC_OBJS)
+
+obj-$(CONFIG_SND_SOC_MAX98937) += max98937_dlkm.o
+max98937_dlkm-y := $(MAX98937_OBJS)
