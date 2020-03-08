@@ -167,6 +167,10 @@ ifdef CONFIG_SND_SOC_MAX98937
     MAX98937_OBJS += max98937.o
 endif
 
+ifdef CONFIG_SND_SOC_USB_HEADSET
+    USB_HEADSET_OBJS += usb-headset.o
+endif
+
 LINUX_INC +=	-Iinclude/linux
 
 INCS +=		$(COMMON_INC) \
@@ -253,3 +257,6 @@ hdmi_dlkm-y := $(HDMICODEC_OBJS)
 
 obj-$(CONFIG_SND_SOC_MAX98937) += max98937_dlkm.o
 max98937_dlkm-y := $(MAX98937_OBJS)
+
+obj-$(CONFIG_SND_SOC_USB_HEADSET) += usb-headset_dlkm.o
+usb-headset_dlkm-y := $(USB_HEADSET_OBJS)

@@ -147,6 +147,9 @@ config SND_SOC_MSM_SDW
 config SND_SOC_MSM_HDMI_CODEC_RX
 	tristate "SND_SOC_MSM_HDMI_CODEC_RX"
 
+config SND_SOC_USB_HEADSET
+	tristate "Xiaomi USB analog headset driver"
+
 config SND_SOC_TAS2557
 	tristate "Texas Instruments TAS2557 SmartAmp(R)"
 
