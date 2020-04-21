@@ -3037,7 +3037,7 @@ static int i2c_msm_init(void)
 {
 	return platform_driver_register(&i2c_msm_driver);
 }
-subsys_initcall(i2c_msm_init);
+fs_initcall(i2c_msm_init);
 
 static void i2c_msm_exit(void)
 {
