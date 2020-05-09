@@ -129,6 +129,8 @@ config WCD_DSP_GLINK
 
 config AVTIMER_LEGACY
 	tristate "AVTIMER_LEGACY"
+	depends on MSMB_CAMERA
+	depends on MSM_AVTIMER
 
 config SND_SOC_SDM660_CDC
 	tristate "SND_SOC_SDM660_CDC"
