@@ -288,11 +288,10 @@ int32_t msm_camera_cci_i2c_write_seq_table(
 	}
 
 	for (i = 0; i < write_setting->size; i++) {
-		rc = msm_camera_cci_i2c_write_seq(client, reg_setting->reg_addr,
-			reg_setting->reg_data, reg_setting->reg_data_size);
+		rc = msm_camera_cci_i2c_write_seq(client, reg_setting[i].reg_addr,
+			reg_setting[i].reg_data, reg_setting[i].reg_data_size);
 		if (rc < 0)
 			return rc;
-		reg_setting++;
 	}
 	if (write_setting->delay > 20)
 		msleep(write_setting->delay);

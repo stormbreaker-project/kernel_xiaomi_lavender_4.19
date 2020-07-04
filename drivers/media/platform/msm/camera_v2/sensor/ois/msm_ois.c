@@ -901,7 +901,7 @@ static long msm_ois_subdev_do_ioctl(
 			settings.size = settings32.size;
 
 			settings.reg_setting =
-				kzalloc(
+				kzalloc(settings.size *
 				sizeof(struct msm_camera_i2c_seq_reg_array),
 				GFP_KERNEL);
 			if (!settings.reg_setting)
@@ -909,6 +909,7 @@ static long msm_ois_subdev_do_ioctl(
 			if (copy_from_user(settings.reg_setting,
 				(void __user *)
 				compat_ptr(settings32.reg_setting),
+				settings.size *
 				sizeof(struct msm_camera_i2c_seq_reg_array))) {
 				kfree(settings.reg_setting);
 				pr_err("%s:%d failed\n", __func__, __LINE__);
