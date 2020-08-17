@@ -1,13 +1,6 @@
-/* Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/input.h>
@@ -2923,7 +2916,8 @@ static int msm_qos_ctl_get(struct snd_kcontrol *kcontrol,
 static int msm_qos_ctl_put(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 	struct snd_soc_card *card = component->card;
 	const char *fe_name = MSM_DAILINK_NAME(LowLatency);
 	struct snd_soc_pcm_runtime *rtd;
@@ -4861,7 +4855,8 @@ static int msm_prepare_us_euro(struct snd_soc_card *card)
 }
 
 
-static bool msm_usbc_swap_gnd_mic(struct snd_soc_component *component, bool active)
+static bool msm_usbc_swap_gnd_mic(struct snd_soc_component *component,
+					bool active)
 {
 	int value = 0;
 	bool ret = false;

@@ -1,13 +1,6 @@
-/* Copyright (c) 2015-2018, 2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2015-2018, 2020, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/delay.h>
@@ -693,7 +686,8 @@ static int msm_ext_get_spk(struct snd_kcontrol *kcontrol,
 static int msm_ext_set_spk(struct snd_kcontrol *kcontrol,
 			   struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 
 	pr_debug("%s()\n", __func__);
 	if (msm_ext_spk_control == ucontrol->value.integer.value[0])
@@ -1300,9 +1294,8 @@ static int msm_adsp_power_up_config(struct snd_soc_component *component,
 		goto err_fail;
 	}
 
-	if (socinfo_get_id() == SDM660_SOC_MSM_ID) {
+	if (socinfo_get_id() == SDM660_SOC_MSM_ID)
 		msm_snd_interrupt_config(pdata);
-	}
 
 	ret = msm_afe_set_config(component);
 	if (ret)
@@ -1381,7 +1374,8 @@ static struct notifier_block service_nb = {
 	.priority = -INT_MAX,
 };
 
-static int msm_config_hph_en0_gpio(struct snd_soc_component *component, bool high)
+static int msm_config_hph_en0_gpio(struct snd_soc_component *component,
+					bool high)
 {
 	struct snd_soc_card *card = component->card;
 	struct msm_asoc_mach_data *pdata;
@@ -1421,7 +1415,8 @@ static int msm_snd_enable_codec_ext_tx_clk(struct snd_soc_component *component,
 static int msm_ext_mclk_tx_event(struct snd_soc_dapm_widget *w,
 				 struct snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 
 	pr_debug("%s: event = %d\n", __func__, event);
 
@@ -1437,7 +1432,8 @@ static int msm_ext_mclk_tx_event(struct snd_soc_dapm_widget *w,
 static int msm_ext_mclk_event(struct snd_soc_dapm_widget *w,
 			      struct snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 
 	pr_debug("%s: event = %d\n", __func__, event);
 
@@ -1842,7 +1838,8 @@ int msm_audrx_init(struct snd_soc_pcm_runtime *rtd)
 			goto done;
 		}
 		pdata->codec_root = entry;
-		tavil_codec_info_create_codec_entry(pdata->codec_root, component);
+		tavil_codec_info_create_codec_entry(pdata->codec_root,
+							component);
 	} else {
 		if (rtd->card->num_aux_devs &&
 		    !list_empty(&rtd->card->aux_comp_list)) {
@@ -1864,8 +1861,10 @@ int msm_audrx_init(struct snd_soc_pcm_runtime *rtd)
 			goto done;
 		}
 		pdata->codec_root = entry;
-		tasha_codec_info_create_codec_entry(pdata->codec_root, component);
-		tasha_mbhc_zdet_gpio_ctrl(msm_config_hph_en0_gpio, component);
+		tasha_codec_info_create_codec_entry(pdata->codec_root,
+							component);
+		tasha_mbhc_zdet_gpio_ctrl(msm_config_hph_en0_gpio,
+							component);
 	}
 done:
 	msm_set_codec_reg_done(true);

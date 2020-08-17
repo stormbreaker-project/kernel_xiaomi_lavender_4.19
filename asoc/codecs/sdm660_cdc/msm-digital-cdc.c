@@ -1,13 +1,6 @@
-/* Copyright (c) 2015-2017, 2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2015-2017, 2020, The Linux Foundation. All rights reserved.
  */
 #include <linux/module.h>
 #include <linux/init.h>
@@ -78,7 +71,7 @@ static int msm_digcdc_clock_control(bool flag)
 	int ret = -EINVAL;
 	struct msm_asoc_mach_data *pdata = NULL;
 	struct msm_dig_priv *msm_dig_cdc =
-				snd_soc_component_get_drvdata(registered_digcodec);
+			snd_soc_component_get_drvdata(registered_digcodec);
 
 	pdata = snd_soc_card_get_drvdata(registered_digcodec->card);
 
@@ -134,7 +127,8 @@ static int msm_dig_cdc_put_dec_enum(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_dapm_widget *w = snd_soc_dapm_kcontrol_widget(kcontrol);
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	unsigned int dec_mux, decimator;
 	char *dec_name = NULL;
@@ -212,7 +206,8 @@ static int msm_dig_cdc_put_dec_enum(struct snd_kcontrol *kcontrol,
 	if (decimator == DEC_SVA)
 		tx_mux_ctl_reg = MSM89XX_CDC_CORE_TX5_MUX_CTL;
 
-	snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x1, adc_dmic_sel);
+	snd_soc_component_update_bits(component, tx_mux_ctl_reg,
+					0x1, adc_dmic_sel);
 
 	ret = snd_soc_dapm_put_enum_double(kcontrol, ucontrol);
 
@@ -222,8 +217,9 @@ out:
 }
 
 
-static int msm_dig_cdc_codec_config_compander(struct snd_soc_component *component,
-					      int interp_n, int event)
+static int msm_dig_cdc_codec_config_compander(
+					struct snd_soc_component *component,
+					int interp_n, int event)
 {
 	struct msm_dig_priv *dig_cdc = snd_soc_component_get_drvdata(component);
 	int comp_ch_bits_set = 0x03;
@@ -323,10 +319,12 @@ static int msm_dig_cdc_codec_config_compander(struct snd_soc_component *componen
  *
  */
 void msm_dig_cdc_hph_comp_cb(
-	int (*codec_hph_comp_gpio)(bool enable, struct snd_soc_component *component),
+	int (*codec_hph_comp_gpio)(bool enable,
+				struct snd_soc_component *component),
 	struct snd_soc_component *component)
 {
-	struct msm_dig_priv *dig_cdc = snd_soc_component_get_drvdata(component);
+	struct msm_dig_priv *dig_cdc =
+			snd_soc_component_get_drvdata(component);
 
 	pr_debug("%s: Enter\n", __func__);
 	dig_cdc->codec_hph_comp_gpio = codec_hph_comp_gpio;
@@ -337,8 +335,10 @@ static int msm_dig_cdc_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 						 struct snd_kcontrol *kcontrol,
 						 int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-	struct msm_dig_priv *msm_dig_cdc = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+					snd_soc_dapm_to_component(w->dapm);
+	struct msm_dig_priv *msm_dig_cdc =
+				snd_soc_component_get_drvdata(component);
 
 	dev_dbg(component->dev, "%s %d %s\n", __func__, event, w->name);
 
@@ -396,7 +396,8 @@ static int msm_dig_cdc_get_iir_enable_audio_mixer(
 					struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 	int iir_idx = ((struct soc_multi_mixer_control *)
 					kcontrol->private_value)->reg;
 	int band_idx = ((struct soc_multi_mixer_control *)
@@ -417,7 +418,8 @@ static int msm_dig_cdc_put_iir_enable_audio_mixer(
 					struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 	int iir_idx = ((struct soc_multi_mixer_control *)
 					kcontrol->private_value)->reg;
 	int band_idx = ((struct soc_multi_mixer_control *)
@@ -475,11 +477,10 @@ static uint32_t get_iir_band_coeff(struct snd_soc_component *component,
 		* sizeof(uint32_t) + 3) & 0x7F);
 
 	/* Mask bits top 2 bits since they are reserved */
-	value |= ((snd_soc_component_read32(component, (MSM89XX_CDC_CORE_IIR1_COEF_B2_CTL
-		+ 64 * iir_idx)) & 0x3f) << 24);
-
+	value |= ((snd_soc_component_read32(component,
+					(MSM89XX_CDC_CORE_IIR1_COEF_B2_CTL
+					+ 64 * iir_idx)) & 0x3f) << 24);
 	return value;
-
 }
 
 static void set_iir_band_coeff(struct snd_soc_component *component,
@@ -509,7 +510,8 @@ static int msm_dig_cdc_get_iir_band_audio_mixer(
 					struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 	int iir_idx = ((struct soc_multi_mixer_control *)
 					kcontrol->private_value)->reg;
 	int band_idx = ((struct soc_multi_mixer_control *)
@@ -548,7 +550,8 @@ static int msm_dig_cdc_put_iir_band_audio_mixer(
 					struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 	int iir_idx = ((struct soc_multi_mixer_control *)
 					kcontrol->private_value)->reg;
 	int band_idx = ((struct soc_multi_mixer_control *)
@@ -615,13 +618,15 @@ static void tx_hpf_corner_freq_callback(struct work_struct *work)
 		 __func__, hpf_work->decimator, (unsigned int)hpf_cut_of_freq);
 	msm_dig_cdc->update_clkdiv(msm_dig_cdc->handle, 0x51);
 
-	snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x30, hpf_cut_of_freq << 4);
+	snd_soc_component_update_bits(component, tx_mux_ctl_reg,
+					0x30, hpf_cut_of_freq << 4);
 }
 
 static int msm_dig_cdc_codec_set_iir_gain(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	int value = 0, reg;
 
 	switch (event) {
@@ -645,7 +650,8 @@ ret:
 static int msm_dig_cdc_compander_get(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 	struct msm_dig_priv *dig_cdc = snd_soc_component_get_drvdata(component);
 	int comp_idx = ((struct soc_multi_mixer_control *)
 					kcontrol->private_value)->reg;
@@ -667,7 +673,8 @@ static int msm_dig_cdc_compander_get(struct snd_kcontrol *kcontrol,
 static int msm_dig_cdc_compander_set(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 	struct msm_dig_priv *dig_cdc = snd_soc_component_get_drvdata(component);
 	int comp_idx = ((struct soc_multi_mixer_control *)
 					kcontrol->private_value)->reg;
@@ -807,8 +814,10 @@ static int msm_dig_cdc_codec_enable_dmic(struct snd_soc_dapm_widget *w,
 					 struct snd_kcontrol *kcontrol,
 					 int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-	struct msm_dig_priv *dig_cdc = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
+	struct msm_dig_priv *dig_cdc =
+				snd_soc_component_get_drvdata(component);
 	u8  dmic_clk_en;
 	u16 dmic_clk_reg;
 	s32 *dmic_clk_cnt;
@@ -848,7 +857,8 @@ static int msm_dig_cdc_codec_enable_dmic(struct snd_soc_dapm_widget *w,
 			__func__, event,  dmic, *dmic_clk_cnt);
 		break;
 	default:
-		dev_err(component->dev, "%s: Invalid DMIC Selection\n", __func__);
+		dev_err(component->dev, "%s: Invalid DMIC Selection\n",
+				__func__);
 		return -EINVAL;
 	}
 
@@ -879,10 +889,12 @@ static int msm_dig_cdc_codec_enable_dec(struct snd_soc_dapm_widget *w,
 					struct snd_kcontrol *kcontrol,
 					int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	struct msm_asoc_mach_data *pdata = NULL;
 	unsigned int decimator;
-	struct msm_dig_priv *msm_dig_cdc = snd_soc_component_get_drvdata(component);
+	struct msm_dig_priv *msm_dig_cdc =
+				snd_soc_component_get_drvdata(component);
 	char *dec_name = NULL;
 	char *widget_name = NULL;
 	char *temp;
@@ -932,7 +944,8 @@ static int msm_dig_cdc_codec_enable_dec(struct snd_soc_dapm_widget *w,
 		dec_reset_reg = MSM89XX_CDC_CORE_CLK_TX_RESET_B1_CTL;
 		offset = 0;
 	} else {
-		dev_err(component->dev, "%s: Error, incorrect dec\n", __func__);
+		dev_err(component->dev, "%s: Error, incorrect dec\n",
+				__func__);
 		ret = -EINVAL;
 		goto out;
 	}
@@ -949,13 +962,15 @@ static int msm_dig_cdc_codec_enable_dec(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		/* Enableable TX digital mute */
-		snd_soc_component_update_bits(component, tx_vol_ctl_reg, 0x01, 0x01);
+		snd_soc_component_update_bits(component, tx_vol_ctl_reg,
+						0x01, 0x01);
 		for (i = 0; i < NUM_DECIMATORS; i++) {
 			if (decimator == i + 1)
 				msm_dig_cdc->dec_active[i] = true;
 		}
 
-		dec_hpf_cut_of_freq = snd_soc_component_read32(component, tx_mux_ctl_reg);
+		dec_hpf_cut_of_freq = snd_soc_component_read32(component,
+							tx_mux_ctl_reg);
 
 		dec_hpf_cut_of_freq = (dec_hpf_cut_of_freq & 0x30) >> 4;
 
@@ -965,14 +980,16 @@ static int msm_dig_cdc_codec_enable_dec(struct snd_soc_dapm_widget *w,
 		if (dec_hpf_cut_of_freq != CF_MIN_3DB_150HZ) {
 
 			/* set cut of freq to CF_MIN_3DB_150HZ (0x1); */
-			snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x30,
-					    CF_MIN_3DB_150HZ << 4);
+			snd_soc_component_update_bits(component,
+							tx_mux_ctl_reg, 0x30,
+							CF_MIN_3DB_150HZ << 4);
 		}
 		msm_dig_cdc->update_clkdiv(msm_dig_cdc->handle, 0x42);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		/* enable HPF */
-		snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x08, 0x00);
+		snd_soc_component_update_bits(component, tx_mux_ctl_reg,
+						0x08, 0x00);
 
 		schedule_delayed_work(
 			    &msm_dig_cdc->tx_mute_dwork[decimator - 1].dwork,
@@ -992,21 +1009,26 @@ static int msm_dig_cdc_codec_enable_dec(struct snd_soc_dapm_widget *w,
 				  );
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
-		snd_soc_component_update_bits(component, tx_vol_ctl_reg, 0x01, 0x01);
+		snd_soc_component_update_bits(component, tx_vol_ctl_reg,
+						0x01, 0x01);
 		msleep(20);
-		snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x08, 0x08);
+		snd_soc_component_update_bits(component, tx_mux_ctl_reg,
+						0x08, 0x08);
 		cancel_delayed_work_sync(&tx_hpf_work[decimator - 1].dwork);
 		cancel_delayed_work_sync(
 			&msm_dig_cdc->tx_mute_dwork[decimator - 1].dwork);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		snd_soc_component_update_bits(component, dec_reset_reg, 1 << w->shift,
-			1 << w->shift);
-		snd_soc_component_update_bits(component, dec_reset_reg, 1 << w->shift, 0x0);
-		snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x08, 0x08);
+		snd_soc_component_update_bits(component, dec_reset_reg,
+						1 << w->shift, 1 << w->shift);
+		snd_soc_component_update_bits(component, dec_reset_reg,
+						1 << w->shift, 0x0);
+		snd_soc_component_update_bits(component, tx_mux_ctl_reg,
+						0x08, 0x08);
 		snd_soc_component_update_bits(component, tx_mux_ctl_reg, 0x30,
 			(tx_hpf_work[decimator - 1].tx_hpf_cut_of_freq) << 4);
-		snd_soc_component_update_bits(component, tx_vol_ctl_reg, 0x01, 0x00);
+		snd_soc_component_update_bits(component, tx_vol_ctl_reg,
+						0x01, 0x00);
 		for (i = 0; i < NUM_DECIMATORS; i++) {
 			if (decimator == i + 1)
 				msm_dig_cdc->dec_active[i] = false;
@@ -1024,7 +1046,8 @@ static int msm_dig_cdc_event_notify(struct notifier_block *block,
 {
 	enum dig_cdc_notify_event event = (enum dig_cdc_notify_event)val;
 	struct snd_soc_component *component = registered_digcodec;
-	struct msm_dig_priv *msm_dig_cdc = snd_soc_component_get_drvdata(component);
+	struct msm_dig_priv *msm_dig_cdc =
+				snd_soc_component_get_drvdata(component);
 	struct msm_asoc_mach_data *pdata = NULL;
 	int ret = -EINVAL;
 
@@ -1274,7 +1297,8 @@ static void sdm660_tx_mute_update_callback(struct work_struct *work)
 static int msm_dig_cdc_soc_probe(struct snd_soc_component *component)
 {
 	struct msm_dig_priv *msm_dig_cdc = dev_get_drvdata(component->dev);
-	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+	struct snd_soc_dapm_context *dapm =
+				snd_soc_component_get_dapm(component);
 	int i, ret;
 
 	msm_dig_cdc->component = component;
@@ -1333,7 +1357,6 @@ static void msm_dig_cdc_soc_remove(struct snd_soc_component *component)
 					       &msm_dig_cdc->nblock,
 					       false);
 	iounmap(msm_dig_cdc->dig_base);
-	return;
 }
 
 static const struct snd_soc_dapm_route audio_dig_map[] = {
@@ -2057,7 +2080,7 @@ static int msm_dig_cdc_resume(struct snd_soc_component *component)
 	return 0;
 }
 
-static struct snd_soc_component_driver soc_msm_dig_codec = {
+static const struct snd_soc_component_driver soc_msm_dig_codec = {
 	.name = DRV_NAME,
 	.probe  = msm_dig_cdc_soc_probe,
 	.remove = msm_dig_cdc_soc_remove,

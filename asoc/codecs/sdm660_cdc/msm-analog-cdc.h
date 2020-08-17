@@ -1,13 +1,6 @@
-/* Copyright (c) 2015-2018, 2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2015-2018, 2020, The Linux Foundation. All rights reserved.
  */
 #ifndef MSM_ANALOG_CDC_H
 #define MSM_ANALOG_CDC_H
@@ -209,7 +202,8 @@ struct sdm660_cdc_priv {
 	/* cal info for codec */
 	struct fw_info *fw_data;
 	struct notifier_block audio_ssr_nb;
-	int (*codec_spk_ext_pa_cb)(struct snd_soc_component *component, int enable);
+	int (*codec_spk_ext_pa_cb)(struct snd_soc_component *component,
+					int enable);
 	unsigned long status_mask;
 	struct wcd_imped_i_ref imped_i_ref;
 	enum wcd_mbhc_imp_det_pin imped_det_pin;
@@ -250,7 +244,8 @@ static inline int msm_anlg_cdc_hs_detect(struct snd_soc_component *component,
 {
 	return 0;
 }
-static inline void msm_anlg_cdc_hs_detect_exit(struct snd_soc_component *component)
+static inline void msm_anlg_cdc_hs_detect_exit(
+			struct snd_soc_component *component)
 {
 
 }

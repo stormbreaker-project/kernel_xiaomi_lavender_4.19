@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2016-2018, 2020, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -105,7 +106,8 @@ static const struct msm_sdw_reg_mask_val msm_sdw_spkr_mode1[] = {
  *
  * Returns 0 on success or -EINVAL on error.
  */
-int msm_sdw_set_spkr_gain_offset(struct snd_soc_component *component, int offset)
+int msm_sdw_set_spkr_gain_offset(struct snd_soc_component *component,
+					int offset)
 {
 	struct msm_sdw_priv *priv;
 
@@ -295,8 +297,10 @@ static void msm_disable_int_mclk1(struct work_struct *work)
 static int msm_int_mclk1_event(struct snd_soc_dapm_widget *w,
 			       struct snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
+	struct msm_sdw_priv *msm_sdw =
+				snd_soc_component_get_drvdata(component);
 	int ret = 0;
 
 	dev_dbg(msm_sdw->dev, "%s: event = %d\n", __func__, event);
@@ -464,7 +468,8 @@ static int msm_sdw_codec_enable_vi_feedback(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		if (test_bit(VI_SENSE_1, &msm_sdw_p->status_mask)) {
-			dev_dbg(component->dev, "%s: spkr1 enabled\n", __func__);
+			dev_dbg(component->dev,
+				"%s: spkr1 enabled\n", __func__);
 			/* Enable V&I sensing */
 			snd_soc_component_update_bits(component,
 				MSM_SDW_TX9_SPKR_PROT_PATH_CTL, 0x20, 0x20);
@@ -487,7 +492,8 @@ static int msm_sdw_codec_enable_vi_feedback(struct snd_soc_dapm_widget *w,
 				0x00);
 		}
 		if (test_bit(VI_SENSE_2, &msm_sdw_p->status_mask)) {
-			dev_dbg(component->dev, "%s: spkr2 enabled\n", __func__);
+			dev_dbg(component->dev,
+				"%s: spkr2 enabled\n", __func__);
 			/* Enable V&I sensing */
 			snd_soc_component_update_bits(component,
 				MSM_SDW_TX11_SPKR_PROT_PATH_CTL, 0x20,
@@ -518,7 +524,8 @@ static int msm_sdw_codec_enable_vi_feedback(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_POST_PMD:
 		if (test_bit(VI_SENSE_1, &msm_sdw_p->status_mask)) {
 			/* Disable V&I sensing */
-			dev_dbg(component->dev, "%s: spkr1 disabled\n", __func__);
+			dev_dbg(component->dev,
+				"%s: spkr1 disabled\n", __func__);
 			snd_soc_component_update_bits(component,
 				MSM_SDW_TX9_SPKR_PROT_PATH_CTL, 0x20, 0x20);
 			snd_soc_component_update_bits(component,
@@ -532,7 +539,8 @@ static int msm_sdw_codec_enable_vi_feedback(struct snd_soc_dapm_widget *w,
 		}
 		if (test_bit(VI_SENSE_2, &msm_sdw_p->status_mask)) {
 			/* Disable V&I sensing */
-			dev_dbg(component->dev, "%s: spkr2 disabled\n", __func__);
+			dev_dbg(component->dev,
+				"%s: spkr2 disabled\n", __func__);
 			snd_soc_component_update_bits(component,
 				MSM_SDW_TX11_SPKR_PROT_PATH_CTL, 0x20,
 				0x20);
@@ -600,22 +608,29 @@ static void msm_sdw_codec_hd2_control(struct snd_soc_component *component,
 	}
 
 	if (hd2_enable_reg && SND_SOC_DAPM_EVENT_ON(event)) {
-		snd_soc_component_update_bits(component, hd2_scale_reg, 0x3C, 0x10);
-		snd_soc_component_update_bits(component, hd2_scale_reg, 0x03, 0x01);
-		snd_soc_component_update_bits(component, hd2_enable_reg, 0x04, 0x04);
+		snd_soc_component_update_bits(component, hd2_scale_reg,
+						0x3C, 0x10);
+		snd_soc_component_update_bits(component, hd2_scale_reg,
+						0x03, 0x01);
+		snd_soc_component_update_bits(component, hd2_enable_reg,
+						0x04, 0x04);
 	}
 
 	if (hd2_enable_reg && SND_SOC_DAPM_EVENT_OFF(event)) {
-		snd_soc_component_update_bits(component, hd2_enable_reg, 0x04, 0x00);
-		snd_soc_component_update_bits(component, hd2_scale_reg, 0x03, 0x00);
-		snd_soc_component_update_bits(component, hd2_scale_reg, 0x3C, 0x00);
+		snd_soc_component_update_bits(component, hd2_enable_reg,
+						0x04, 0x00);
+		snd_soc_component_update_bits(component, hd2_scale_reg,
+						0x03, 0x00);
+		snd_soc_component_update_bits(component, hd2_scale_reg,
+						0x3C, 0x00);
 	}
 }
 
 static int msm_sdw_enable_swr(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	struct msm_sdw_priv *msm_sdw;
 	int i, ch_cnt;
 
@@ -665,8 +680,10 @@ static int msm_sdw_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 					     struct snd_kcontrol *kcontrol,
 					     int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
+	struct msm_sdw_priv *msm_sdw =
+				snd_soc_component_get_drvdata(component);
 	u16 gain_reg;
 	u16 reg;
 	int val;
@@ -690,7 +707,8 @@ static int msm_sdw_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		snd_soc_component_update_bits(component, reg, 0x10, 0x10);
 		msm_sdw_codec_hd2_control(component, reg, event);
-		snd_soc_component_update_bits(component, reg, 1 << 0x5, 1 << 0x5);
+		snd_soc_component_update_bits(component, reg,
+						1 << 0x5, 1 << 0x5);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		msm_sdw_config_compander(component, w->shift, event);
@@ -700,16 +718,18 @@ static int msm_sdw_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 		     msm_sdw->comp_enabled[COMP2]) &&
 		    (gain_reg == MSM_SDW_RX7_RX_VOL_CTL ||
 		     gain_reg == MSM_SDW_RX8_RX_VOL_CTL)) {
-			snd_soc_component_update_bits(component, MSM_SDW_RX7_RX_PATH_SEC1,
-					    0x01, 0x01);
 			snd_soc_component_update_bits(component,
-					    MSM_SDW_RX7_RX_PATH_MIX_SEC0,
-					    0x01, 0x01);
-			snd_soc_component_update_bits(component, MSM_SDW_RX8_RX_PATH_SEC1,
-					    0x01, 0x01);
+						MSM_SDW_RX7_RX_PATH_SEC1,
+						0x01, 0x01);
 			snd_soc_component_update_bits(component,
-					    MSM_SDW_RX8_RX_PATH_MIX_SEC0,
-					    0x01, 0x01);
+						MSM_SDW_RX7_RX_PATH_MIX_SEC0,
+						0x01, 0x01);
+			snd_soc_component_update_bits(component,
+						MSM_SDW_RX8_RX_PATH_SEC1,
+						0x01, 0x01);
+			snd_soc_component_update_bits(component,
+						MSM_SDW_RX8_RX_PATH_MIX_SEC0,
+						0x01, 0x01);
 			offset_val = -2;
 		}
 		val = snd_soc_component_read32(component, gain_reg);
@@ -719,7 +739,8 @@ static int msm_sdw_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(component, reg, 0x10, 0x00);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		snd_soc_component_update_bits(component, reg, 1 << 0x5, 0 << 0x5);
+		snd_soc_component_update_bits(component, reg,
+						1 << 0x5, 0 << 0x5);
 		snd_soc_component_update_bits(component, reg,	0x40, 0x40);
 		snd_soc_component_update_bits(component, reg,	0x40, 0x00);
 		msm_sdw_codec_hd2_control(component, reg, event);
@@ -729,16 +750,18 @@ static int msm_sdw_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 		     msm_sdw->comp_enabled[COMP2]) &&
 		    (gain_reg == MSM_SDW_RX7_RX_VOL_CTL ||
 		     gain_reg == MSM_SDW_RX8_RX_VOL_CTL)) {
-			snd_soc_component_update_bits(component, MSM_SDW_RX7_RX_PATH_SEC1,
-					    0x01, 0x00);
 			snd_soc_component_update_bits(component,
-					    MSM_SDW_RX7_RX_PATH_MIX_SEC0,
-					    0x01, 0x00);
-			snd_soc_component_update_bits(component, MSM_SDW_RX8_RX_PATH_SEC1,
-					    0x01, 0x00);
+						MSM_SDW_RX7_RX_PATH_SEC1,
+						0x01, 0x00);
 			snd_soc_component_update_bits(component,
-					    MSM_SDW_RX8_RX_PATH_MIX_SEC0,
-					    0x01, 0x00);
+						MSM_SDW_RX7_RX_PATH_MIX_SEC0,
+						0x01, 0x00);
+			snd_soc_component_update_bits(component,
+						MSM_SDW_RX8_RX_PATH_SEC1,
+						0x01, 0x00);
+			snd_soc_component_update_bits(component,
+						MSM_SDW_RX8_RX_PATH_MIX_SEC0,
+						0x01, 0x00);
 			offset_val = 2;
 			val = snd_soc_component_read32(component, gain_reg);
 			val += offset_val;
@@ -792,8 +815,8 @@ static int msm_sdw_config_ear_spkr_gain(struct snd_soc_component *component,
 		    (msm_sdw->ear_spkr_gain != 0)) {
 			snd_soc_component_write(component, gain_reg, 0x0);
 
-			dev_dbg(component->dev, "%s: Reset RX4 Volume to 0 dB\n",
-				__func__);
+			dev_dbg(component->dev,
+				"%s: Reset RX4 Volume to 0 dB\n", __func__);
 		}
 		break;
 	}
@@ -805,7 +828,8 @@ static int msm_sdw_codec_spk_boost_event(struct snd_soc_dapm_widget *w,
 					 struct snd_kcontrol *kcontrol,
 					 int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	u16 boost_path_ctl, boost_path_cfg1;
 	u16 reg;
 
@@ -827,21 +851,25 @@ static int msm_sdw_codec_spk_boost_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		snd_soc_component_update_bits(component, boost_path_ctl, 0x10, 0x10);
-		snd_soc_component_update_bits(component, boost_path_cfg1, 0x01, 0x01);
+		snd_soc_component_update_bits(component, boost_path_ctl,
+						0x10, 0x10);
+		snd_soc_component_update_bits(component, boost_path_cfg1,
+						0x01, 0x01);
 		snd_soc_component_update_bits(component, reg, 0x10, 0x00);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		snd_soc_component_update_bits(component, boost_path_cfg1, 0x01, 0x00);
-		snd_soc_component_update_bits(component, boost_path_ctl, 0x10, 0x00);
+		snd_soc_component_update_bits(component, boost_path_cfg1,
+						0x01, 0x00);
+		snd_soc_component_update_bits(component, boost_path_ctl,
+						0x10, 0x00);
 		break;
 	};
 
 	return 0;
 }
 
-static int msm_sdw_config_compander(struct snd_soc_component *component, int comp,
-				    int event)
+static int msm_sdw_config_compander(struct snd_soc_component *component,
+					int comp, int event)
 {
 	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
 	u16 comp_ctl0_reg, rx_path_cfg0_reg;
@@ -860,19 +888,29 @@ static int msm_sdw_config_compander(struct snd_soc_component *component, int com
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
 		/* Enable Compander Clock */
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x01, 0x01);
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x02, 0x02);
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x02, 0x00);
-		snd_soc_component_update_bits(component, rx_path_cfg0_reg, 0x02, 0x02);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x01, 0x01);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x02, 0x02);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x02, 0x00);
+		snd_soc_component_update_bits(component, rx_path_cfg0_reg,
+						0x02, 0x02);
 	}
 
 	if (SND_SOC_DAPM_EVENT_OFF(event)) {
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x04, 0x04);
-		snd_soc_component_update_bits(component, rx_path_cfg0_reg, 0x02, 0x00);
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x02, 0x02);
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x02, 0x00);
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x01, 0x00);
-		snd_soc_component_update_bits(component, comp_ctl0_reg, 0x04, 0x00);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x04, 0x04);
+		snd_soc_component_update_bits(component, rx_path_cfg0_reg,
+						0x02, 0x00);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x02, 0x02);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x02, 0x00);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x01, 0x00);
+		snd_soc_component_update_bits(component, comp_ctl0_reg,
+						0x04, 0x00);
 	}
 
 	return 0;
@@ -882,7 +920,8 @@ static int msm_sdw_get_compander(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
 
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 	int comp = ((struct soc_multi_mixer_control *)
 		    kcontrol->private_value)->shift;
 	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
@@ -894,7 +933,8 @@ static int msm_sdw_get_compander(struct snd_kcontrol *kcontrol,
 static int msm_sdw_set_compander(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
 	int comp = ((struct soc_multi_mixer_control *)
 		    kcontrol->private_value)->shift;
@@ -910,8 +950,10 @@ static int msm_sdw_set_compander(struct snd_kcontrol *kcontrol,
 static int msm_sdw_ear_spkr_pa_gain_get(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
-	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
+	struct msm_sdw_priv *msm_sdw =
+				snd_soc_component_get_drvdata(component);
 
 	ucontrol->value.integer.value[0] = msm_sdw->ear_spkr_gain;
 
@@ -924,8 +966,10 @@ static int msm_sdw_ear_spkr_pa_gain_get(struct snd_kcontrol *kcontrol,
 static int msm_sdw_ear_spkr_pa_gain_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
-	struct msm_sdw_priv *msm_sdw = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
+	struct msm_sdw_priv *msm_sdw =
+				snd_soc_component_get_drvdata(component);
 
 	msm_sdw->ear_spkr_gain =  ucontrol->value.integer.value[0];
 
@@ -939,9 +983,11 @@ static int msm_sdw_spkr_left_boost_stage_get(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
 	u8 bst_state_max = 0;
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 
-	bst_state_max = snd_soc_component_read32(component, MSM_SDW_BOOST0_BOOST_CTL);
+	bst_state_max = snd_soc_component_read32(component,
+						MSM_SDW_BOOST0_BOOST_CTL);
 	bst_state_max = (bst_state_max & 0x0c) >> 2;
 	ucontrol->value.integer.value[0] = bst_state_max;
 	dev_dbg(component->dev, "%s: ucontrol->value.integer.value[0]  = %ld\n",
@@ -954,7 +1000,8 @@ static int msm_sdw_spkr_left_boost_stage_put(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
 	u8 bst_state_max;
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 
 	dev_dbg(component->dev, "%s: ucontrol->value.integer.value[0]  = %ld\n",
 		__func__, ucontrol->value.integer.value[0]);
@@ -969,9 +1016,11 @@ static int msm_sdw_spkr_right_boost_stage_get(struct snd_kcontrol *kcontrol,
 			struct snd_ctl_elem_value *ucontrol)
 {
 	u8 bst_state_max = 0;
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+					snd_soc_kcontrol_component(kcontrol);
 
-	bst_state_max = snd_soc_component_read32(component, MSM_SDW_BOOST1_BOOST_CTL);
+	bst_state_max = snd_soc_component_read32(component,
+						MSM_SDW_BOOST1_BOOST_CTL);
 	bst_state_max = (bst_state_max & 0x0c) >> 2;
 	ucontrol->value.integer.value[0] = bst_state_max;
 	dev_dbg(component->dev, "%s: ucontrol->value.integer.value[0]  = %ld\n",
@@ -984,7 +1033,8 @@ static int msm_sdw_spkr_right_boost_stage_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	u8 bst_state_max;
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 
 	dev_dbg(component->dev, "%s: ucontrol->value.integer.value[0]  = %ld\n",
 		__func__, ucontrol->value.integer.value[0]);
@@ -1000,8 +1050,10 @@ static int msm_sdw_vi_feed_mixer_get(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_dapm_widget *widget =
 		snd_soc_dapm_kcontrol_widget(kcontrol);
-	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
-	struct msm_sdw_priv *msm_sdw_p = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(widget->dapm);
+	struct msm_sdw_priv *msm_sdw_p =
+				snd_soc_component_get_drvdata(component);
 
 	ucontrol->value.integer.value[0] = msm_sdw_p->vi_feed_value;
 
@@ -1013,8 +1065,10 @@ static int msm_sdw_vi_feed_mixer_put(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_dapm_widget *widget =
 		snd_soc_dapm_kcontrol_widget(kcontrol);
-	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
-	struct msm_sdw_priv *msm_sdw_p = snd_soc_component_get_drvdata(component);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(widget->dapm);
+	struct msm_sdw_priv *msm_sdw_p =
+				snd_soc_component_get_drvdata(component);
 	struct soc_multi_mixer_control *mixer =
 		((struct soc_multi_mixer_control *)kcontrol->private_value);
 	u32 dai_id = widget->shift;
@@ -1833,10 +1887,9 @@ static int msm_sdw_codec_probe(struct snd_soc_component *component)
 
 static void msm_sdw_codec_remove(struct snd_soc_component *component)
 {
-	return;
 }
 
-static struct snd_soc_component_driver soc_codec_dev_msm_sdw = {
+static const struct snd_soc_component_driver soc_codec_dev_msm_sdw = {
 	.name = DRV_NAME,
 	.probe = msm_sdw_codec_probe,
 	.remove = msm_sdw_codec_remove,

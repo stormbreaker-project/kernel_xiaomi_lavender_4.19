@@ -1,13 +1,6 @@
-/* Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/of_gpio.h>
@@ -155,8 +148,8 @@ static SOC_ENUM_SINGLE_EXT_DECL(bt_sample_rate, bt_sample_rate_text);
 
 static int msm_dmic_event(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *kcontrol, int event);
-static int msm_int_enable_dig_cdc_clk(struct snd_soc_component *component, int enable,
-				      bool dapm);
+static int msm_int_enable_dig_cdc_clk(struct snd_soc_component *component,
+					int enable, bool dapm);
 static int msm_int_mclk0_event(struct snd_soc_dapm_widget *w,
 			      struct snd_kcontrol *kcontrol, int event);
 static int msm_int_mi2s_snd_startup(struct snd_pcm_substream *substream);
@@ -741,7 +734,8 @@ static int loopback_mclk_put(struct snd_kcontrol *kcontrol,
 {
 	int ret = -EINVAL;
 	struct msm_asoc_mach_data *pdata = NULL;
-	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct snd_soc_component *component =
+				snd_soc_kcontrol_component(kcontrol);
 
 	pdata = snd_soc_card_get_drvdata(component->card);
 	pr_debug("%s: mclk_rsc_ref %d enable %ld\n",
@@ -923,7 +917,8 @@ static int msm_dmic_event(struct snd_soc_dapm_widget *w,
 			  struct snd_kcontrol *kcontrol, int event)
 {
 	struct msm_asoc_mach_data *pdata = NULL;
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	int ret = 0;
 
 	pdata = snd_soc_card_get_drvdata(component->card);
@@ -956,7 +951,8 @@ static int msm_int_mclk0_event(struct snd_soc_dapm_widget *w,
 			       struct snd_kcontrol *kcontrol, int event)
 {
 	struct msm_asoc_mach_data *pdata = NULL;
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component =
+				snd_soc_dapm_to_component(w->dapm);
 	int ret = 0;
 
 	pdata = snd_soc_card_get_drvdata(component->card);
@@ -1246,8 +1242,10 @@ static void *def_msm_int_wcd_mbhc_cal(void)
 
 static int msm_audrx_init(struct snd_soc_pcm_runtime *rtd)
 {
-	struct snd_soc_component *dig_cdc = snd_soc_rtdcom_lookup(rtd, "msm_digital_codec");
-	struct snd_soc_component *ana_cdc = snd_soc_rtdcom_lookup(rtd, "pmic_analog_codec");
+	struct snd_soc_component *dig_cdc =
+			snd_soc_rtdcom_lookup(rtd, "msm_digital_codec");
+	struct snd_soc_component *ana_cdc =
+			snd_soc_rtdcom_lookup(rtd, "pmic_analog_codec");
 	struct snd_soc_dapm_context *dapm;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	struct msm_asoc_mach_data *pdata = snd_soc_card_get_drvdata(rtd->card);
