@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/init.h>
@@ -1478,17 +1478,26 @@ static int wcd_spi_component_bind(struct device *dev,
 	spi_message_add_tail(&wcd_spi->xfer2[1], &wcd_spi->msg2);
 
 	/* Pre-allocate the buffers */
+#if IS_ENABLED(CONFIG_WCD_SPI_KZALLOC)
+	wcd_spi->tx_buf = kzalloc(WCD_SPI_RW_MAX_BUF_SIZE,
+				  GFP_KERNEL | GFP_DMA);
+#else
 	wcd_spi->tx_buf = dma_zalloc_coherent(&spi->dev,
 					      WCD_SPI_RW_MAX_BUF_SIZE,
 					      &wcd_spi->tx_dma, GFP_KERNEL);
+#endif
 	if (!wcd_spi->tx_buf) {
 		ret = -ENOMEM;
 		goto done;
 	}
-
+#if IS_ENABLED(CONFIG_WCD_SPI_KZALLOC)
+	wcd_spi->rx_buf = kzalloc(WCD_SPI_RW_MAX_BUF_SIZE,
+				  GFP_KERNEL | GFP_DMA);
+#else
 	wcd_spi->rx_buf = dma_zalloc_coherent(&spi->dev,
 					      WCD_SPI_RW_MAX_BUF_SIZE,
 					      &wcd_spi->rx_dma, GFP_KERNEL);
+#endif
 	if (!wcd_spi->rx_buf) {
 		dma_free_coherent(&spi->dev, WCD_SPI_RW_MAX_BUF_SIZE,
 				  wcd_spi->tx_buf, wcd_spi->tx_dma);
@@ -1517,11 +1526,16 @@ static void wcd_spi_component_unbind(struct device *dev,
 	spi_transfer_del(&wcd_spi->xfer1);
 	spi_transfer_del(&wcd_spi->xfer2[0]);
 	spi_transfer_del(&wcd_spi->xfer2[1]);
-
+#if IS_ENABLED(CONFIG_WCD_SPI_KZALLOC)
+	kfree(wcd_spi->tx_buf);
+	kfree(wcd_spi->rx_buf);
+#else
 	dma_free_coherent(&spi->dev, WCD_SPI_RW_MAX_BUF_SIZE,
 			  wcd_spi->tx_buf, wcd_spi->tx_dma);
 	dma_free_coherent(&spi->dev, WCD_SPI_RW_MAX_BUF_SIZE,
 			  wcd_spi->rx_buf, wcd_spi->rx_dma);
+#endif
+
 	wcd_spi->tx_buf = NULL;
 	wcd_spi->rx_buf = NULL;
 }
@@ -1557,8 +1571,10 @@ static int wcd_spi_probe(struct spi_device *spi)
 	mutex_init(&wcd_spi->xfer_mutex);
 	INIT_DELAYED_WORK(&wcd_spi->clk_dwork, wcd_spi_clk_work);
 	init_completion(&wcd_spi->resume_comp);
-	arch_setup_dma_ops(&spi->dev, 0, 0, NULL, true);
 
+#ifndef CONFIG_WCD_SPI_KZALLOC
+	arch_setup_dma_ops(&spi->dev, 0, 0, NULL, true);
+#endif
 	wcd_spi->spi = spi;
 	spi_set_drvdata(spi, wcd_spi);
 
