@@ -1308,7 +1308,7 @@ static struct snd_soc_dai_link msm_ext_common_be_dai[] = {
 		.id = MSM_BACKEND_DAI_PROXY_RX,
 		.ignore_pmdown_time = 1,
 		.ignore_suspend = 1,
-        },
+	},
 	{
 		.name = LPASS_BE_USB_AUDIO_RX,
 		.stream_name = "USB Audio Playback",
