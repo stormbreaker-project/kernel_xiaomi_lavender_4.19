@@ -1545,6 +1545,17 @@ static const struct component_ops wcd_spi_component_ops = {
 	.unbind = wcd_spi_component_unbind,
 };
 
+#ifdef CONFIG_WCD_SPI_DMA_MASKING
+static void arch_setup_spi_archdata(struct spi_device *spi)
+{
+	if (spi->dev.coherent_dma_mask == DMA_MASK_NONE &&
+		spi->dev.dma_mask == NULL) {
+			spi->dev.coherent_dma_mask = DMA_BIT_MASK(sizeof(dma_addr_t) * 8);
+			spi->dev.dma_mask = &spi->dev.coherent_dma_mask;
+	}
+}
+#endif
+
 static int wcd_spi_probe(struct spi_device *spi)
 {
 	struct wcd_spi_priv *wcd_spi;
@@ -1575,6 +1586,10 @@ static int wcd_spi_probe(struct spi_device *spi)
 #ifndef CONFIG_WCD_SPI_KZALLOC
 	arch_setup_dma_ops(&spi->dev, 0, 0, NULL, true);
 #endif
+#ifdef CONFIG_WCD_SPI_DMA_MASKING
+	arch_setup_spi_archdata(spi);
+#endif
+
 	wcd_spi->spi = spi;
 	spi_set_drvdata(spi, wcd_spi);
 
