@@ -41,7 +41,7 @@
 #include <dsp/q6common.h>
 #include <dsp/audio_cal_utils.h>
 #ifdef CONFIG_ELLIPTICLABS
-#include <sound/apr_elliptic.h>
+#include <dsp/apr_elliptic.h>
 #include <elliptic/elliptic_mixer_controls.h>
 #endif
 
