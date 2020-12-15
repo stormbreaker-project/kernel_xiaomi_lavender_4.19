@@ -7351,6 +7351,8 @@ static void csr_roam_process_join_res(struct mac_context *mac_ctx,
 	struct ps_global_info *ps_global_info = &mac_ctx->sme.ps_global_info;
 	struct join_rsp *join_rsp = context;
 	uint32_t len;
+	enum csr_akm_type akm_type;
+	uint8_t mdie_present;
 
 	if (!join_rsp) {
 		sme_err("join_rsp is NULL");
@@ -7556,6 +7558,17 @@ static void csr_roam_process_join_res(struct mac_context *mac_ctx,
 #endif
 			csr_roam_free_connected_info(mac_ctx,
 				&session->connectedInfo);
+
+			akm_type = session->connectedProfile.AuthType;
+			mdie_present =
+				session->connectedProfile.mdid.mdie_present;
+			if (akm_type == eCSR_AUTH_TYPE_FT_SAE &&
+			    mdie_present) {
+				sme_debug("FT-SAE: Update MDID in PMK cache");
+				csr_update_pmk_cache_ft(mac_ctx,
+							session_id, NULL);
+			}
+
 			len = join_rsp->assocReqLength +
 				join_rsp->assocRspLength +
 				join_rsp->beaconLength;
@@ -15216,6 +15229,7 @@ csr_roam_set_pmkid_cache(struct mac_context *mac, uint32_t sessionId,
 	struct csr_roam_session *pSession = CSR_GET_SESSION(mac, sessionId);
 	uint32_t i = 0;
 	tPmkidCacheInfo *pmksa;
+	enum csr_akm_type akm_type;
 
 	if (!pSession) {
 		sme_err("session %d not found", sessionId);
@@ -15250,6 +15264,17 @@ csr_roam_set_pmkid_cache(struct mac_context *mac, uint32_t sessionId,
 		/* Update new entry */
 		csr_update_pmk_cache(pSession, pmksa);
 
+		akm_type = pSession->connectedProfile.AuthType;
+		if ((akm_type == eCSR_AUTH_TYPE_FT_RSN ||
+		     akm_type == eCSR_AUTH_TYPE_FT_FILS_SHA256 ||
+		     akm_type == eCSR_AUTH_TYPE_FT_FILS_SHA384 ||
+		     akm_type == eCSR_AUTH_TYPE_FT_SUITEB_EAP_SHA384) &&
+		    pSession->connectedProfile.mdid.mdie_present) {
+			sme_debug("Auth type is %d update the MDID in cache",
+				  akm_type);
+			csr_update_pmk_cache_ft(mac,
+						sessionId, pmksa->cache_id);
+		}
 	}
 	return QDF_STATUS_SUCCESS;
 }
@@ -15312,6 +15337,55 @@ void csr_clear_sae_single_pmk(struct mac_context *mac,
 	wlan_objmgr_vdev_release_ref(vdev, WLAN_LEGACY_SME_ID);
 }
 #endif
+
+void csr_update_pmk_cache_ft(struct mac_context *mac,
+			     uint32_t vdev_id, uint8_t *cache_id)
+{
+	struct csr_roam_session *session = CSR_GET_SESSION(mac, vdev_id);
+	tPmkidCacheInfo *cached_pmksa;
+	uint16_t mobility_domain;
+	uint16_t session_mdid;
+	uint8_t mdie_present;
+	uint8_t i;
+
+	if (!session) {
+		sme_err("session %d not found", vdev_id);
+		return;
+	}
+
+	session_mdid = session->connectedProfile.mdid.mobility_domain;
+	for (i = 0; i < session->NumPmkidCache; i++) {
+		cached_pmksa = &session->PmkidCacheInfo[i];
+		mdie_present = cached_pmksa->mdid.mdie_present;
+		mobility_domain = cached_pmksa->mdid.mobility_domain;
+		/*
+		 * Update the MDID for the matching BSSID pmksa entry
+		 * and Delete the other PMKSA cache entries that has
+		 * the same MDID
+		 */
+		if (qdf_is_macaddr_equal(&cached_pmksa->BSSID,
+					 &session->connectedProfile.bssid)) {
+			sme_debug("PMK cached entry found, updating the MDID");
+			cached_pmksa->mdid.mdie_present = 1;
+			cached_pmksa->mdid.mobility_domain = session_mdid;
+		} else if (cached_pmksa->ssid_len &&
+			   (!qdf_mem_cmp(cached_pmksa->ssid,
+					 session->connectedProfile.SSID.ssId,
+					 session->
+					 connectedProfile.SSID.length)) &&
+			   (!qdf_mem_cmp(cached_pmksa->cache_id,
+					 cache_id, CACHE_ID_LEN))) {
+			sme_debug("PMK cached entry found, updating the MDID");
+			cached_pmksa->mdid.mdie_present = 1;
+			cached_pmksa->mdid.mobility_domain = session_mdid;
+		} else if (mdie_present && (mobility_domain == session_mdid)) {
+			sme_debug("MDID has matched, Delete the PMKSA entry");
+			/* Free the matched mobility domain entry from cache */
+			csr_roam_del_pmk_cache_entry(session, cached_pmksa, i);
+			i--;
+		}
+	}
+}
 
 void csr_roam_del_pmk_cache_entry(struct csr_roam_session *session,
 				  tPmkidCacheInfo *cached_pmksa, u32 del_idx)
@@ -22830,6 +22904,8 @@ static QDF_STATUS csr_process_roam_sync_callback(struct mac_context *mac_ctx,
 	struct mlme_roam_after_data_stall *vdev_roam_params;
 	uint32_t chan_id;
 	struct wlan_crypto_pmksa *pmksa;
+	enum csr_akm_type akm_type;
+	uint8_t mdie_present;
 
 	vdev = wlan_objmgr_get_vdev_by_id_from_psoc(mac_ctx->psoc, session_id,
 						    WLAN_LEGACY_SME_ID);
@@ -23075,6 +23151,9 @@ static QDF_STATUS csr_process_roam_sync_callback(struct mac_context *mac_ctx,
 				 &session->connectedProfile.bssid);
 		sme_debug("Trying to find PMKID for " QDF_MAC_ADDR_STR,
 			  QDF_MAC_ADDR_ARRAY(pmkid_cache->BSSID.bytes));
+		akm_type = session->connectedProfile.AuthType;
+		mdie_present = session->connectedProfile.mdid.mdie_present;
+
 		if (csr_lookup_pmkid_using_bssid(mac_ctx, session,
 						 pmkid_cache,
 						 &pmkid_index)) {
@@ -23089,7 +23168,16 @@ static QDF_STATUS csr_process_roam_sync_callback(struct mac_context *mac_ctx,
 		} else {
 			sme_debug("PMKID Not found in cache for " QDF_MAC_ADDR_STR,
 				  QDF_MAC_ADDR_ARRAY(pmkid_cache->BSSID.bytes));
-			if (roam_synch_data->pmk_len) {
+			/*
+			 * In FT roam when the CSR lookup fails then the PMK
+			 * details from the roam sync indication will be updated
+			 * to Session/PMK cache. This will result in having
+			 * multiple PMK cache entries for the same MDID, So do
+			 * not add the PMKSA cache entry for all FT-Roam.
+			 */
+			if (!csr_is_auth_type11r(mac_ctx, akm_type,
+						 mdie_present) &&
+			    roam_synch_data->pmk_len) {
 				qdf_mem_copy(pmkid_cache->PMKID,
 					     roam_synch_data->pmkid, PMKID_LEN);
 				qdf_mem_copy(pmkid_cache->pmk,
