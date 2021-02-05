@@ -45,6 +45,7 @@
 #include "wlan_mlme_public_struct.h"
 #include "wlan_mlme_ucfg_api.h"
 #include "wlan_mlme_api.h"
+#include "lim_assoc_utils.h"
 
 #define RSN_OUI_SIZE 4
 /* ////////////////////////////////////////////////////////////////////// */
@@ -658,6 +659,9 @@ populate_dot11f_ht_caps(struct mac_context *mac,
 	struct mlme_ht_capabilities_info *ht_cap_info;
 	struct mlme_vht_capabilities_info *vht_cap_info;
 
+	tSchBeaconStruct *pBeaconStruct;
+	struct bss_description *bssDescription;
+
 	ht_cap_info = &mac->mlme_cfg->ht_caps.ht_cap_info;
 	vht_cap_info = &mac->mlme_cfg->vht_caps.vht_cap_info;
 
@@ -685,10 +689,39 @@ populate_dot11f_ht_caps(struct mac_context *mac,
 			pe_session->htSupportedChannelWidthSet;
 		pDot11f->txSTBC = pe_session->ht_config.ht_tx_stbc;
 		pDot11f->rxSTBC = pe_session->ht_config.ht_rx_stbc;
-		pDot11f->shortGI20MHz = pe_session->ht_config.ht_sgi20;
-		pDot11f->shortGI40MHz = pe_session->ht_config.ht_sgi40;
-	}
 
+		if (LIM_IS_STA_ROLE(pe_session) && pe_session->lim_join_req) {
+			bssDescription =
+				&pe_session->lim_join_req->bssDescription;
+			pBeaconStruct =
+				qdf_mem_malloc(sizeof(tSchBeaconStruct));
+
+			if (!pBeaconStruct)
+				return QDF_STATUS_E_NOMEM;
+
+			lim_extract_ap_capabilities(mac,
+				(uint8_t *)bssDescription->ieFields,
+				lim_get_ielen_from_bss_description(bssDescription),
+				pBeaconStruct);
+
+			if (pe_session->ht_config.ht_sgi20)
+				pDot11f->shortGI20MHz =
+					(uint8_t)pBeaconStruct->HTCaps.shortGI20MHz;
+			else
+				pDot11f->shortGI20MHz = false;
+
+			if (pe_session->ht_config.ht_sgi40)
+				pDot11f->shortGI40MHz =
+					(uint8_t)pBeaconStruct->HTCaps.shortGI40MHz;
+			else
+				pDot11f->shortGI40MHz = false;
+
+			qdf_mem_free(pBeaconStruct);
+		} else {
+			pDot11f->shortGI20MHz = pe_session->ht_config.ht_sgi20;
+			pDot11f->shortGI40MHz = pe_session->ht_config.ht_sgi40;
+		}
+	}
 	/* Ensure that shortGI40MHz is Disabled if supportedChannelWidthSet is
 	   eHT_CHANNEL_WIDTH_20MHZ */
 	if (pDot11f->supportedChannelWidthSet == eHT_CHANNEL_WIDTH_20MHZ) {
