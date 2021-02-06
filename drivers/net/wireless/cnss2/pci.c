@@ -1505,6 +1505,8 @@ int cnss_pci_call_driver_probe(struct cnss_pci_data *pci_priv)
 		if (ret) {
 			cnss_pr_err("Failed to idle restart host driver, err = %d\n",
 				    ret);
+			plat_priv->power_up_error = ret;
+			complete_all(&plat_priv->power_up_complete);
 			goto out;
 		}
 		clear_bit(CNSS_DRIVER_RECOVERY, &plat_priv->driver_state);
@@ -1975,6 +1977,7 @@ static int cnss_qca6290_powerup(struct cnss_pci_data *pci_priv)
 		cnss_pci_deinit_mhi(pci_priv);
 	}
 
+	plat_priv->power_up_error = 0;
 retry:
 	ret = cnss_power_on_device(plat_priv);
 	if (ret) {
@@ -4483,11 +4486,12 @@ static void cnss_dev_rddm_timeout_hdlr(struct timer_list *t)
 {
 	struct cnss_pci_data *pci_priv =
 		from_timer(pci_priv, t, dev_rddm_timer);
-	struct mhi_controller *mhi_ctrl = pci_priv->mhi_ctrl;
+	struct mhi_controller *mhi_ctrl;
 
 	if (!pci_priv)
 		return;
 
+	mhi_ctrl = pci_priv->mhi_ctrl;
 	cnss_fatal_err("Timeout waiting for RDDM notification\n");
 
 	if (mhi_get_exec_env(mhi_ctrl) == MHI_EE_PBL)
@@ -4565,6 +4569,7 @@ static void cnss_mhi_notify_status(struct mhi_controller *mhi_ctrl, void *priv,
 			cnss_pci_dump_bl_sram_mem(pci_priv);
 			cnss_pci_dump_mhi_reg(pci_priv);
 		}
+		cnss_reason = CNSS_REASON_TIMEOUT;
 		break;
 	default:
 		cnss_pr_err("Unsupported MHI status cb reason: %d\n", reason);
