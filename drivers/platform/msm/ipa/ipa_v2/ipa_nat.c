@@ -35,7 +35,8 @@ enum nat_table_type {
 #define IPA_TABLE_MAX_ENTRIES 1000
 #define MAX_ALLOC_NAT_SIZE (IPA_TABLE_MAX_ENTRIES * NAT_TABLE_ENTRY_SIZE_BYTE)
 
-static int ipa_nat_vma_fault_remap(struct vm_fault *vmf)
+static int ipa_nat_vma_fault_remap(
+	 struct vm_area_struct *vma, struct vm_fault *vmf)
 {
 	IPADBG("\n");
 	vmf->page = NULL;
@@ -130,10 +131,10 @@ static const struct file_operations ipa_nat_fops = {
  *
  * Called during nat table delete
  */
-static void allocate_temp_nat_memory(void)
+void allocate_temp_nat_memory(void)
 {
 	struct ipa_nat_mem *nat_ctx = &(ipa_ctx->nat_mem);
-	gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO;
+	int gfp_flags = GFP_KERNEL | __GFP_ZERO;
 
 	nat_ctx->tmp_vaddr =
 		dma_alloc_coherent(ipa_ctx->pdev, IPA_NAT_TEMP_MEM_SIZE,
@@ -244,7 +245,7 @@ bail:
 int ipa2_allocate_nat_device(struct ipa_ioc_nat_alloc_mem *mem)
 {
 	struct ipa_nat_mem *nat_ctx = &(ipa_ctx->nat_mem);
-	gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO;
+	int gfp_flags = GFP_KERNEL | __GFP_ZERO;
 	int result;
 
 	IPADBG("passed memory size %zu\n", mem->size);
@@ -748,7 +749,7 @@ bail:
  *
  * Called by NAT client driver to free the NAT memory and remove the device
  */
-static void ipa_nat_free_mem_and_device(struct ipa_nat_mem *nat_ctx)
+void ipa_nat_free_mem_and_device(struct ipa_nat_mem *nat_ctx)
 {
 	IPADBG("\n");
 	mutex_lock(&nat_ctx->lock);
@@ -860,10 +861,10 @@ int ipa2_nat_del_cmd(struct ipa_ioc_v4_nat_del *del)
 	ipa_ctx->nat_mem.size_base_tables = 0;
 	ipa_ctx->nat_mem.size_expansion_tables = 0;
 	ipa_ctx->nat_mem.public_ip_addr = 0;
-	ipa_ctx->nat_mem.ipv4_rules_addr = NULL;
-	ipa_ctx->nat_mem.ipv4_expansion_rules_addr = NULL;
-	ipa_ctx->nat_mem.index_table_addr = NULL;
-	ipa_ctx->nat_mem.index_table_expansion_addr = NULL;
+	ipa_ctx->nat_mem.ipv4_rules_addr = 0;
+	ipa_ctx->nat_mem.ipv4_expansion_rules_addr = 0;
+	ipa_ctx->nat_mem.index_table_addr = 0;
+	ipa_ctx->nat_mem.index_table_expansion_addr = 0;
 
 	ipa_nat_free_mem_and_device(&ipa_ctx->nat_mem);
 	IPADBG("return\n");

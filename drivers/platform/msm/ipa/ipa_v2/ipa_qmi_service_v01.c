@@ -3,14 +3,13 @@
  * Copyright (c) 2013-2017, 2020, The Linux Foundation. All rights reserved.
  */
 
+#include <linux/qmi_encdec.h>
 #include <linux/ipa_qmi_service_v01.h>
 
-#include <linux/soc/qcom/qmi.h>
-
-#include "ipa_qmi_service.h"
+#include <soc/qcom/msm_qmi_interface.h>
 
 /* Type Definitions  */
-static struct qmi_elem_info ipa_hdr_tbl_info_type_data_v01_ei[] = {
+static struct elem_info ipa_hdr_tbl_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -36,7 +35,7 @@ static struct qmi_elem_info ipa_hdr_tbl_info_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_route_tbl_info_type_data_v01_ei[] = {
+static struct elem_info ipa_route_tbl_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -62,7 +61,7 @@ static struct qmi_elem_info ipa_route_tbl_info_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_modem_mem_info_type_data_v01_ei[] = {
+static struct elem_info ipa_modem_mem_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -88,7 +87,7 @@ static struct qmi_elem_info ipa_modem_mem_info_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_hdr_proc_ctx_tbl_info_type_data_v01_ei[] = {
+static struct elem_info ipa_hdr_proc_ctx_tbl_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -116,7 +115,7 @@ static struct qmi_elem_info ipa_hdr_proc_ctx_tbl_info_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_zip_tbl_info_type_data_v01_ei[] = {
+static struct elem_info ipa_zip_tbl_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -142,7 +141,7 @@ static struct qmi_elem_info ipa_zip_tbl_info_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_ipfltr_range_eq_16_type_data_v01_ei[] = {
+static struct elem_info ipa_ipfltr_range_eq_16_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_1_BYTE,
 		.elem_len	= 1,
@@ -180,7 +179,7 @@ static struct qmi_elem_info ipa_ipfltr_range_eq_16_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_ipfltr_mask_eq_32_type_data_v01_ei[] = {
+static struct elem_info ipa_ipfltr_mask_eq_32_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_1_BYTE,
 		.elem_len	= 1,
@@ -218,7 +217,7 @@ static struct qmi_elem_info ipa_ipfltr_mask_eq_32_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_ipfltr_eq_16_type_data_v01_ei[] = {
+static struct elem_info ipa_ipfltr_eq_16_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_1_BYTE,
 		.elem_len	= 1,
@@ -245,7 +244,7 @@ static struct qmi_elem_info ipa_ipfltr_eq_16_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_ipfltr_eq_32_type_data_v01_ei[] = {
+static struct elem_info ipa_ipfltr_eq_32_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_1_BYTE,
 		.elem_len	= 1,
@@ -271,7 +270,7 @@ static struct qmi_elem_info ipa_ipfltr_eq_32_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_ipfltr_mask_eq_128_type_data_v01_ei[] = {
+static struct elem_info ipa_ipfltr_mask_eq_128_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_1_BYTE,
 		.elem_len	= 1,
@@ -309,7 +308,7 @@ static struct qmi_elem_info ipa_ipfltr_mask_eq_128_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_filter_rule_type_data_v01_ei[] = {
+static struct elem_info ipa_filter_rule_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_2_BYTE,
 		.elem_len	= 1,
@@ -546,7 +545,7 @@ static struct qmi_elem_info ipa_filter_rule_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_filter_spec_type_data_v01_ei[] = {
+static struct elem_info ipa_filter_spec_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -627,7 +626,7 @@ static struct qmi_elem_info ipa_filter_spec_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info
+static struct elem_info
 	ipa_filter_rule_identifier_to_handle_map_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
@@ -656,7 +655,7 @@ static struct qmi_elem_info
 	},
 };
 
-static struct qmi_elem_info ipa_filter_handle_to_index_map_data_v01_ei[] = {
+static struct elem_info ipa_filter_handle_to_index_map_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -684,7 +683,7 @@ static struct qmi_elem_info ipa_filter_handle_to_index_map_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_init_modem_driver_req_msg_data_v01_ei[] = {
+struct elem_info ipa_init_modem_driver_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
 		.elem_len	= 1,
@@ -919,7 +918,7 @@ struct qmi_elem_info ipa_init_modem_driver_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_init_modem_driver_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_init_modem_driver_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -929,7 +928,7 @@ struct qmi_elem_info ipa_init_modem_driver_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_init_modem_driver_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_OPT_FLAG,
@@ -978,7 +977,7 @@ struct qmi_elem_info ipa_init_modem_driver_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_indication_reg_req_msg_data_v01_ei[] = {
+struct elem_info ipa_indication_reg_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
 		.elem_len	= 1,
@@ -1026,7 +1025,7 @@ struct qmi_elem_info ipa_indication_reg_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_indication_reg_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_indication_reg_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1036,7 +1035,7 @@ struct qmi_elem_info ipa_indication_reg_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_indication_reg_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -1045,7 +1044,7 @@ struct qmi_elem_info ipa_indication_reg_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_master_driver_init_complt_ind_msg_data_v01_ei[] = {
+struct elem_info ipa_master_driver_init_complt_ind_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1055,7 +1054,7 @@ struct qmi_elem_info ipa_master_driver_init_complt_ind_msg_data_v01_ei[] = {
 		.offset		= offsetof(struct
 			ipa_master_driver_init_complt_ind_msg_v01,
 			master_driver_init_status),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -1064,7 +1063,7 @@ struct qmi_elem_info ipa_master_driver_init_complt_ind_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_install_fltr_rule_req_msg_data_v01_ei[] = {
+struct elem_info ipa_install_fltr_rule_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
 		.elem_len	= 1,
@@ -1193,7 +1192,7 @@ struct qmi_elem_info ipa_install_fltr_rule_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_install_fltr_rule_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_install_fltr_rule_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1203,7 +1202,7 @@ struct qmi_elem_info ipa_install_fltr_rule_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_install_fltr_rule_resp_msg_v01,
 			resp),
-		.ei_array       = qmi_response_type_v01_ei,
+		.ei_array       = get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_OPT_FLAG,
@@ -1245,7 +1244,7 @@ struct qmi_elem_info ipa_install_fltr_rule_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_fltr_installed_notif_req_msg_data_v01_ei[] = {
+struct elem_info ipa_fltr_installed_notif_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -1495,7 +1494,7 @@ struct qmi_elem_info ipa_fltr_installed_notif_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_fltr_installed_notif_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_fltr_installed_notif_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1505,7 +1504,7 @@ struct qmi_elem_info ipa_fltr_installed_notif_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_fltr_installed_notif_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -1514,7 +1513,7 @@ struct qmi_elem_info ipa_fltr_installed_notif_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_enable_force_clear_datapath_req_msg_data_v01_ei[] = {
+struct elem_info ipa_enable_force_clear_datapath_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -1562,7 +1561,7 @@ struct qmi_elem_info ipa_enable_force_clear_datapath_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_enable_force_clear_datapath_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_enable_force_clear_datapath_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1572,7 +1571,7 @@ struct qmi_elem_info ipa_enable_force_clear_datapath_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_enable_force_clear_datapath_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -1581,7 +1580,7 @@ struct qmi_elem_info ipa_enable_force_clear_datapath_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_disable_force_clear_datapath_req_msg_data_v01_ei[] = {
+struct elem_info ipa_disable_force_clear_datapath_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -1599,7 +1598,7 @@ struct qmi_elem_info ipa_disable_force_clear_datapath_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_disable_force_clear_datapath_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_disable_force_clear_datapath_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1609,7 +1608,7 @@ struct qmi_elem_info ipa_disable_force_clear_datapath_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_disable_force_clear_datapath_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -1618,7 +1617,7 @@ struct qmi_elem_info ipa_disable_force_clear_datapath_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_config_req_msg_data_v01_ei[] = {
+struct elem_info ipa_config_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
 		.elem_len	= 1,
@@ -1866,7 +1865,7 @@ struct qmi_elem_info ipa_config_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_config_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_config_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -1876,7 +1875,7 @@ struct qmi_elem_info ipa_config_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_config_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -1885,7 +1884,7 @@ struct qmi_elem_info ipa_config_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_get_data_stats_req_msg_data_v01_ei[] = {
+struct elem_info ipa_get_data_stats_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_SIGNED_4_BYTE_ENUM,
 		.elem_len	= 1,
@@ -1923,7 +1922,7 @@ struct qmi_elem_info ipa_get_data_stats_req_msg_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_pipe_stats_info_type_data_v01_ei[] = {
+static struct elem_info ipa_pipe_stats_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -1976,7 +1975,7 @@ static struct qmi_elem_info ipa_pipe_stats_info_type_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_stats_type_filter_rule_data_v01_ei[] = {
+static struct elem_info ipa_stats_type_filter_rule_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -2004,7 +2003,7 @@ static struct qmi_elem_info ipa_stats_type_filter_rule_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_get_data_stats_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_get_data_stats_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -2014,7 +2013,7 @@ struct qmi_elem_info ipa_get_data_stats_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_get_data_stats_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_OPT_FLAG,
@@ -2136,7 +2135,7 @@ struct qmi_elem_info ipa_get_data_stats_resp_msg_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_apn_data_stats_info_type_data_v01_ei[] = {
+static struct elem_info ipa_apn_data_stats_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -2194,7 +2193,7 @@ static struct qmi_elem_info ipa_apn_data_stats_info_type_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_get_apn_data_stats_req_msg_data_v01_ei[] = {
+struct elem_info ipa_get_apn_data_stats_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
 		.elem_len	= 1,
@@ -2232,7 +2231,7 @@ struct qmi_elem_info ipa_get_apn_data_stats_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_get_apn_data_stats_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_get_apn_data_stats_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -2242,7 +2241,7 @@ struct qmi_elem_info ipa_get_apn_data_stats_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_get_apn_data_stats_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_OPT_FLAG,
@@ -2283,7 +2282,7 @@ struct qmi_elem_info ipa_get_apn_data_stats_resp_msg_data_v01_ei[] = {
 	},
 };
 
-static struct qmi_elem_info ipa_data_usage_quota_info_type_data_v01_ei[] = {
+static struct elem_info ipa_data_usage_quota_info_type_data_v01_ei[] = {
 	{
 		.data_type	= QMI_UNSIGNED_4_BYTE,
 		.elem_len	= 1,
@@ -2311,7 +2310,7 @@ static struct qmi_elem_info ipa_data_usage_quota_info_type_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_set_data_usage_quota_req_msg_data_v01_ei[] = {
+struct elem_info ipa_set_data_usage_quota_req_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_OPT_FLAG,
 		.elem_len	= 1,
@@ -2351,7 +2350,7 @@ struct qmi_elem_info ipa_set_data_usage_quota_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_set_data_usage_quota_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_set_data_usage_quota_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -2361,7 +2360,7 @@ struct qmi_elem_info ipa_set_data_usage_quota_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_set_data_usage_quota_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
@@ -2370,7 +2369,7 @@ struct qmi_elem_info ipa_set_data_usage_quota_resp_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_data_usage_quota_reached_ind_msg_data_v01_ei[] = {
+struct elem_info ipa_data_usage_quota_reached_ind_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -2390,7 +2389,7 @@ struct qmi_elem_info ipa_data_usage_quota_reached_ind_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_stop_data_usage_quota_req_msg_data_v01_ei[] = {
+struct elem_info ipa_stop_data_usage_quota_req_msg_data_v01_ei[] = {
 	/* ipa_stop_data_usage_quota_req_msg is empty */
 	{
 		.data_type	= QMI_EOTI,
@@ -2399,7 +2398,7 @@ struct qmi_elem_info ipa_stop_data_usage_quota_req_msg_data_v01_ei[] = {
 	},
 };
 
-struct qmi_elem_info ipa_stop_data_usage_quota_resp_msg_data_v01_ei[] = {
+struct elem_info ipa_stop_data_usage_quota_resp_msg_data_v01_ei[] = {
 	{
 		.data_type	= QMI_STRUCT,
 		.elem_len	= 1,
@@ -2409,7 +2408,7 @@ struct qmi_elem_info ipa_stop_data_usage_quota_resp_msg_data_v01_ei[] = {
 		.offset		= offsetof(
 			struct ipa_stop_data_usage_quota_resp_msg_v01,
 			resp),
-		.ei_array	= qmi_response_type_v01_ei,
+		.ei_array	= get_qmi_response_type_v01_ei(),
 	},
 	{
 		.data_type	= QMI_EOTI,
