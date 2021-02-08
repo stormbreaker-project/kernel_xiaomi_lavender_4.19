@@ -867,7 +867,7 @@ static ssize_t ipa_dma_debugfs_reset_statistics(struct file *file,
 	return count;
 }
 
-static const struct file_operations ipadma_stats_ops = {
+const struct file_operations ipadma_stats_ops = {
 	.read = ipa_dma_debugfs_read,
 	.write = ipa_dma_debugfs_reset_statistics,
 };
@@ -876,7 +876,7 @@ static void ipa_dma_debugfs_init(void)
 {
 	const mode_t read_write_mode = 0666;
 
-	dent = debugfs_create_dir("ipa_dma", NULL);
+	dent = debugfs_create_dir("ipa_dma", 0);
 	if (IS_ERR(dent)) {
 		IPADMA_ERR("fail to create folder ipa_dma\n");
 		return;
@@ -884,7 +884,7 @@ static void ipa_dma_debugfs_init(void)
 
 	dfile_info =
 		debugfs_create_file("info", read_write_mode, dent,
-				 NULL, &ipadma_stats_ops);
+				 0, &ipadma_stats_ops);
 	if (!dfile_info || IS_ERR(dfile_info)) {
 		IPADMA_ERR("fail to create file stats\n");
 		goto fail;
