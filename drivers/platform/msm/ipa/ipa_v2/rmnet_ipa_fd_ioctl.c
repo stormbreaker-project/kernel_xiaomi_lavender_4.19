@@ -292,8 +292,7 @@ static long wan_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	default:
 		retval = -ENOTTY;
 	}
-	if (!IS_ERR(param))
-		kvfree(param);
+	kfree(param);
 	return retval;
 }
 
