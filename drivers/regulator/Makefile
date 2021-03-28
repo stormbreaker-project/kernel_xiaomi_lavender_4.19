@@ -141,6 +141,7 @@ obj-$(CONFIG_REGULATOR_CPR4_MMSS_LDO) += cpr4-mmss-ldo-regulator.o
 obj-$(CONFIG_REGULATOR_CPR4_HMSS_LDO) += cpr4-hmss-ldo-regulator.o
 obj-$(CONFIG_REGULATOR_CPRH_KBSS) += cprh-kbss-regulator.o
 obj-$(CONFIG_REGULATOR_MSM_GFX_LDO) += msm_gfx_ldo.o
+obj-$(CONFIG_REGULATOR_CPR) += cpr-regulator.o
 obj-$(CONFIG_REGULATOR_CPR3) += cpr3-regulator.o cpr3-util.o
 obj-$(CONFIG_REGULATOR_CPR4_MMSS_LDO) += cpr4-mmss-ldo-regulator.o
 obj-$(CONFIG_REGULATOR_CPRH_KBSS) += cprh-kbss-regulator.o
