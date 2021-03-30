@@ -55,7 +55,11 @@ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
 #if IS_ENABLED(CONFIG_NF_NAT)
 void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info);
 #else
-#define icmpv6_ndo_send icmpv6_send
+static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+{
+	struct inet6_skb_parm parm = { 0 };
+	__icmpv6_send(skb_in, type, code, info, &parm);
+}
 #endif
 
 #else

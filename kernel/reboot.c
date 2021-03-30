@@ -555,7 +555,7 @@ static int __init reboot_setup(char *str)
 							isdigit(*(str+3)))
 				reboot_cpu = simple_strtoul(str+3, NULL, 0);
 			else
-				reboot_mode = REBOOT_SOFT;
+				*mode = REBOOT_SOFT;
 			if (reboot_cpu >= num_possible_cpus()) {
 				pr_err("Ignoring the CPU number in reboot= option. "
 				       "CPU %d exceeds possible cpu number %d\n",
