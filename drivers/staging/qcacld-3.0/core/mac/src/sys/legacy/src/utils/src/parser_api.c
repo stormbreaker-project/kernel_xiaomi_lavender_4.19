@@ -45,6 +45,7 @@
 #include "wlan_mlme_public_struct.h"
 #include "wlan_mlme_ucfg_api.h"
 #include "wlan_mlme_api.h"
+#include "lim_assoc_utils.h"
 
 #define RSN_OUI_SIZE 4
 /* ////////////////////////////////////////////////////////////////////// */
@@ -658,6 +659,9 @@ populate_dot11f_ht_caps(struct mac_context *mac,
 	struct mlme_ht_capabilities_info *ht_cap_info;
 	struct mlme_vht_capabilities_info *vht_cap_info;
 
+	tSchBeaconStruct *pBeaconStruct;
+	struct bss_description *bssDescription;
+
 	ht_cap_info = &mac->mlme_cfg->ht_caps.ht_cap_info;
 	vht_cap_info = &mac->mlme_cfg->vht_caps.vht_cap_info;
 
@@ -685,10 +689,39 @@ populate_dot11f_ht_caps(struct mac_context *mac,
 			pe_session->htSupportedChannelWidthSet;
 		pDot11f->txSTBC = pe_session->ht_config.ht_tx_stbc;
 		pDot11f->rxSTBC = pe_session->ht_config.ht_rx_stbc;
-		pDot11f->shortGI20MHz = pe_session->ht_config.ht_sgi20;
-		pDot11f->shortGI40MHz = pe_session->ht_config.ht_sgi40;
-	}
 
+		if (LIM_IS_STA_ROLE(pe_session) && pe_session->lim_join_req) {
+			bssDescription =
+				&pe_session->lim_join_req->bssDescription;
+			pBeaconStruct =
+				qdf_mem_malloc(sizeof(tSchBeaconStruct));
+
+			if (!pBeaconStruct)
+				return QDF_STATUS_E_NOMEM;
+
+			lim_extract_ap_capabilities(mac,
+				(uint8_t *)bssDescription->ieFields,
+				lim_get_ielen_from_bss_description(bssDescription),
+				pBeaconStruct);
+
+			if (pe_session->ht_config.ht_sgi20)
+				pDot11f->shortGI20MHz =
+					(uint8_t)pBeaconStruct->HTCaps.shortGI20MHz;
+			else
+				pDot11f->shortGI20MHz = false;
+
+			if (pe_session->ht_config.ht_sgi40)
+				pDot11f->shortGI40MHz =
+					(uint8_t)pBeaconStruct->HTCaps.shortGI40MHz;
+			else
+				pDot11f->shortGI40MHz = false;
+
+			qdf_mem_free(pBeaconStruct);
+		} else {
+			pDot11f->shortGI20MHz = pe_session->ht_config.ht_sgi20;
+			pDot11f->shortGI40MHz = pe_session->ht_config.ht_sgi40;
+		}
+	}
 	/* Ensure that shortGI40MHz is Disabled if supportedChannelWidthSet is
 	   eHT_CHANNEL_WIDTH_20MHZ */
 	if (pDot11f->supportedChannelWidthSet == eHT_CHANNEL_WIDTH_20MHZ) {
@@ -2839,7 +2872,7 @@ QDF_STATUS wlan_parse_ftie_sha384(uint8_t *frame, uint32_t frame_len,
 				  struct sSirAssocRsp *assoc_rsp)
 {
 	const uint8_t *ie, *ie_end, *pos;
-	uint8_t ie_len;
+	uint8_t ie_len, remaining_ie_len;
 	struct wlan_sha384_ftinfo_subelem *ft_subelem;
 
 	ie = wlan_get_ie_ptr_from_eid(DOT11F_EID_FTINFO, frame, frame_len);
@@ -2858,11 +2891,13 @@ QDF_STATUS wlan_parse_ftie_sha384(uint8_t *frame, uint32_t frame_len,
 		pe_err("Invalid FTIE len:%d", ie_len);
 		return QDF_STATUS_E_FAILURE;
 	}
+	remaining_ie_len = ie_len;
 	pos = ie + 2;
 	qdf_mem_copy(&assoc_rsp->sha384_ft_info, pos,
 		     sizeof(struct wlan_sha384_ftinfo));
 	ie_end = ie + ie_len;
 	pos += sizeof(struct wlan_sha384_ftinfo);
+	remaining_ie_len -= sizeof(struct wlan_sha384_ftinfo);
 	ft_subelem = &assoc_rsp->sha384_ft_subelem;
 	qdf_mem_zero(ft_subelem, sizeof(*ft_subelem));
 	while (ie_end - pos >= 2) {
@@ -2870,10 +2905,19 @@ QDF_STATUS wlan_parse_ftie_sha384(uint8_t *frame, uint32_t frame_len,
 
 		id = *pos++;
 		len = *pos++;
-		if (len < 1) {
+		/* Subtract data length(len) + 1 bytes for
+		 * Subelement ID + 1 bytes for length from
+		 * remaining FTIE buffer len (ie_len).
+		 * Subelement Parameter(s) field :
+		 *         Subelement ID  Length     Data
+		 * Octets:      1            1     variable
+		 */
+		if (len < 1 || remaining_ie_len < (len + 2)) {
 			pe_err("Invalid FT subelem length");
 			return QDF_STATUS_E_FAILURE;
 		}
+
+		remaining_ie_len -= (len + 2);
 
 		switch (id) {
 		case FTIE_SUBELEM_R1KH_ID:

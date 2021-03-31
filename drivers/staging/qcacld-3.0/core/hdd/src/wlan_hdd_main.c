@@ -1619,9 +1619,6 @@ static void hdd_update_tgt_ht_cap(struct hdd_context *hdd_ctx,
 	if (ht_cap_info.rx_stbc && !cfg->ht_rx_stbc)
 		ht_cap_info.rx_stbc = cfg->ht_rx_stbc;
 
-	/* Set the LDPC capability */
-	ht_cap_info.adv_coding_cap = cfg->ht_rx_ldpc;
-
 	if (ht_cap_info.short_gi_20_mhz && !cfg->ht_sgi_20)
 		ht_cap_info.short_gi_20_mhz = cfg->ht_sgi_20;
 
@@ -3634,9 +3631,7 @@ int hdd_wlan_start_modules(struct hdd_context *hdd_ctx, bool reinit)
 
 		hdd_spectral_register_to_dbr(hdd_ctx);
 
-		hdd_sysfs_create_driver_root_obj();
-		hdd_sysfs_create_version_interface(hdd_ctx->psoc);
-		hdd_sysfs_create_powerstats_interface();
+		hdd_create_sysfs_files(hdd_ctx);
 		hdd_update_hw_sw_info(hdd_ctx);
 
 		if (QDF_GLOBAL_FTM_MODE == hdd_get_conparam()) {
@@ -3675,9 +3670,7 @@ int hdd_wlan_start_modules(struct hdd_context *hdd_ctx, bool reinit)
 	return 0;
 
 destroy_driver_sysfs:
-	hdd_sysfs_destroy_powerstats_interface();
-	hdd_sysfs_destroy_version_interface();
-	hdd_sysfs_destroy_driver_root_obj();
+	hdd_destroy_sysfs_files();
 	cds_post_disable();
 
 unregister_notifiers:
@@ -12619,9 +12612,7 @@ int hdd_wlan_stop_modules(struct hdd_context *hdd_ctx, bool ftm_mode)
 		goto done;
 	}
 
-	hdd_sysfs_destroy_powerstats_interface();
-	hdd_sysfs_destroy_version_interface();
-	hdd_sysfs_destroy_driver_root_obj();
+	hdd_destroy_sysfs_files();
 	hdd_debug("Closing CDS modules!");
 
 	if (hdd_get_conparam() != QDF_GLOBAL_EPPING_MODE) {
