@@ -918,8 +918,8 @@ struct st_data {
 static void write_default_values(struct cgroup_subsys_state *css)
 {
 	static struct st_data st_targets[] = {
-		{ "top-app",	1, 1, 0, 1 },
-		{ "foreground",	1, 1, 0, 1 }
+		{ "top-app",	10, 1, 0, 1 },
+		{ "foreground",	5, 1, 0, 1 }
 	};
 	int i;
 
