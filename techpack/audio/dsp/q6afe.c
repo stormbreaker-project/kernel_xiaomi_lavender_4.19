@@ -5165,6 +5165,7 @@ static int q6afe_send_enc_config(u16 port_id,
 		}
 	}
 
+#ifndef CONFIG_ARCH_SDM660
 	if (format == ASM_MEDIA_FMT_APTX) {
 		pr_debug("%s: sending AFE_PARAM_ID_APTX_SYNC_MODE to DSP",
 			__func__);
@@ -5220,6 +5221,7 @@ static int q6afe_send_enc_config(u16 port_id,
 			goto exit;
 		}
 	}
+#endif
 
 	pr_debug("%s:sending AFE_ENCODER_PARAM_ID_PACKETIZER to DSP\n",
 		 __func__);
@@ -5236,6 +5238,7 @@ static int q6afe_send_enc_config(u16 port_id,
 		goto exit;
 	}
 
+#ifndef CONFIG_ARCH_SDM660
 	if (format != ASM_MEDIA_FMT_APTX_AD_SPEECH) {
 		pr_debug("%s:sending AFE_ENCODER_PARAM_ID_ENABLE_SCRAMBLING mode= %d to DSP payload\n",
 			  __func__, scrambler_mode);
@@ -5254,6 +5257,7 @@ static int q6afe_send_enc_config(u16 port_id,
 #endif
 		}
 	}
+#endif
 
 	if (format == ASM_MEDIA_FMT_APTX) {
 		pr_debug("%s:sending CAPI_V2_PARAM_ID_APTX_ENC_SWITCH_TO_MONO mode= %d to DSP payload\n",
